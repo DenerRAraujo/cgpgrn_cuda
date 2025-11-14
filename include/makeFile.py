@@ -4,7 +4,7 @@ import argparse
 def get_parser() -> argparse.ArgumentParser:
     '''
     :return: an argparse ArgumentParser object for parsing command
-        line parameters
+    line parameters
     '''
     parser = argparse.ArgumentParser(description='Complete pre-processing and script generator for CGPGRN.', epilog = 'Example usage to process data: python completePreProcessing.py -cm KMeans -nc 10 -e 500nTF-ExpressionData.csv -p PseudoTime.csv -pn hHep -s 500nTF -d BiKMeans -r 5')
 
@@ -21,10 +21,9 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument('-e', dest = 'MAXEVAL', type = str,
                         default = 'None',
                         help='Maximum number of evaluations \n'
-                        )      
+                        )     
 
-
-    return parser                        
+    return parser             
 
 
 def parse_arguments():
@@ -50,8 +49,9 @@ def make(MAX_OUTPUTS, MAX_NODES, MAX_EVAL):
     makeFileOpen.write("main:\n")
     if os.name == 'nt':
         makeFileOpen.write('\t${CC} -DMAX_OUTPUTS=${MAXOUTVALUE} -DMAX_NODES=${MAXNODESVALUE} -DNUM_GENERATIONS=${MAXEVAL} source/*.cpp* -o progW -I"source/amd/include" -lOpenCl -L"source/amd/lib/x86_64"\n')
-    else:
-        makeFileOpen.write('\t${CC} -DMAX_OUTPUTS=${MAXOUTVALUE} -DMAX_NODES=${MAXNODESVALUE} -DNUM_GENERATIONS=${MAXEVAL} source/*.cpp* -o progL -lOpenCL\n')
+    else: # Esta é a parte para sistemas Linux/macOS, como o Google Colab
+        # Adicionar -I/usr/include/CL para os includes e -L/usr/lib/x86_64-linux-gnu para as libs OpenCL
+        makeFileOpen.write('\t${CC} -DMAX_OUTPUTS=${MAXOUTVALUE} -DMAX_NODES=${MAXNODESVALUE} -DNUM_GENERATIONS=${MAXEVAL} -I/usr/include/CL source/*.cpp* -o progL -L/usr/lib/x86_64-linux-gnu -lOpenCL\n')
     makeFileOpen.close()
 
 
@@ -70,4 +70,4 @@ if __name__ == '__main__':
         os.system('chmod +x Makefile')
         os.system('make')
     else:
-        os.system('cmd /c "make"')    
+        os.system('cmd /c "make"')
